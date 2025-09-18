@@ -33,10 +33,10 @@ class SpringApplicationTest {
 	@Test
 	void healthCheckOk() throws Exception {
 		ResponseEntity<String> forObject = restTemplate
-				.getForEntity("http://localhost:" + port + "/", String.class);
+				.getForEntity("http://localhost:" + port + "/actuator/health", String.class);
 		assertThat(forObject.getStatusCode().value()).isEqualTo(HttpStatus.OK.value());
 		assertThat(forObject.getBody())
-				.contains("ok");
+				.contains("\"status\":\"UP\"");
 	}
 
 	@Test
