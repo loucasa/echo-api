@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpStatusCodeException;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,17 +36,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class SpringMain {
 
     @Component
+    @Getter @Setter
     @ConfigurationProperties
     static class EnvironmentConfig {
         private String name;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
     }
     
     @RestController
@@ -55,7 +51,7 @@ public class SpringMain {
 
         @GetMapping("/")
         public Object index() {
-            return Map.of("env", env.name, "status", "ok");
+            return Map.of("env", env.getName(), "status", "ok");
         }
 
         @GetMapping("/echos/{id}")
