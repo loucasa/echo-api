@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.AnswerRepository.Answer;
+import org.example.EchoRepository.Echo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,22 +18,22 @@ class DatabaseLoader {
     private static final Logger log = LoggerFactory.getLogger(DatabaseLoader.class);
 
     @Autowired
-    AnswerRepository repository;
+    EchoRepository repository;
 
-    List<Answer> testAnswers = new ArrayList<>();
+    List<Echo> testEchos = new ArrayList<>();
 
     @Bean
     CommandLineRunner load() {
 
         return args -> {
-            log.info("Preloading {}", createAnswer("answer 1"));
-            log.info("Preloading {}", createAnswer("answer 2"));
+            log.info("Preloading {}", createEcho("answer 1"));
+            log.info("Preloading {}", createEcho("answer 2"));
         };
     }
 
-    Answer createAnswer(String answerValue) {
-        var answer = repository.save(new Answer(null, answerValue, new Date(), new Date()));
-        testAnswers.add(answer);
-        return answer;
+    Echo createEcho(String echoValue) {
+        var echo = repository.save(new Echo(null, echoValue, new Date(), new Date()));
+        testEchos.add(echo);
+        return echo;
     }
 }

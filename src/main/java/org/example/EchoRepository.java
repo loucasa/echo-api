@@ -1,34 +1,38 @@
 package org.example;
 
+import java.util.Date;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.Date;
-import java.util.UUID;
 
 @Repository
-public interface AnswerRepository extends JpaRepository<AnswerRepository.Answer, UUID> {
+public interface EchoRepository extends JpaRepository<EchoRepository.Echo, UUID> {
 
     @Entity
-    class Answer {
+    class Echo {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         final UUID id;
-        final String message;
+
+        final String answer;
+
         final Date created;
+
         final Date modified;
 
-        public Answer() {
+        public Echo() {
             this(null, null, new Date(), new Date());
         }
 
-        public Answer(UUID id, String message, Date created, Date modified) {
+        public Echo(UUID id, String answer, Date created, Date modified) {
             this.id = id;
-            this.message = message;
+            this.answer = answer;
             this.created = created;
             this.modified = modified;
         }
@@ -37,8 +41,8 @@ public interface AnswerRepository extends JpaRepository<AnswerRepository.Answer,
             return id;
         }
 
-        public String getMessage() {
-            return message;
+        public String getAnswer() {
+            return answer;
         }
 
         public Date getCreated() {
@@ -53,7 +57,7 @@ public interface AnswerRepository extends JpaRepository<AnswerRepository.Answer,
         public String toString() {
             return "Answer{" +
                     "id=" + id +
-                    ", message='" + message + '\'' +
+                    ", answer='" + answer + '\'' +
                     '}';
         }
     }

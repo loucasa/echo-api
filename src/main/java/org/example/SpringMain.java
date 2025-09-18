@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.AnswerRepository.Answer;
+import org.example.EchoRepository.Echo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,51 +30,51 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class SpringMain {
 
     @RestController
-    public static class AnswerController {
+    public static class EchoController {
         @Autowired
-        private AnswerRepository repository;
+        private EchoRepository repository;
 
         @GetMapping("/")
         public String index() {
             return "ok";
         }
 
-        @GetMapping("/answers/{id}")
-        public EntityModel<Answer> one(@PathVariable UUID id) {
-            Answer answer = repository.findById(id).orElseThrow(() -> new AnswerNotFoundException(id));
-            return EntityModel.of(answer, //
-                    linkTo(methodOn(AnswerController.class).one(id)).withSelfRel(),
-                    linkTo(methodOn(AnswerController.class).all()).withRel("answers"));
+        @GetMapping("/echos/{id}")
+        public EntityModel<Echo> one(@PathVariable UUID id) {
+            Echo echo = repository.findById(id).orElseThrow(() -> new EchoNotFoundException(id));
+            return EntityModel.of(echo, //
+                    linkTo(methodOn(EchoController.class).one(id)).withSelfRel(),
+                    linkTo(methodOn(EchoController.class).all()).withRel("echos"));
         }
 
-        @GetMapping("/answers")
-        public CollectionModel<EntityModel<Answer>> all() {
-            List<EntityModel<Answer>> answers = repository.findAll().stream()
+        @GetMapping("/echos")
+        public CollectionModel<EntityModel<Echo>> all() {
+            List<EntityModel<Echo>> echos = repository.findAll().stream()
                     .map(employee -> EntityModel.of(employee,
-                            linkTo(methodOn(AnswerController.class).one(employee.getId())).withSelfRel(),
-                            linkTo(methodOn(AnswerController.class).all()).withRel("answers")))
+                            linkTo(methodOn(EchoController.class).one(employee.getId())).withSelfRel(),
+                            linkTo(methodOn(EchoController.class).all()).withRel("echos")))
                     .collect(Collectors.toList());
 
-            return CollectionModel.of(answers, linkTo(methodOn(AnswerController.class).all()).withSelfRel());
+            return CollectionModel.of(echos, linkTo(methodOn(EchoController.class).all()).withSelfRel());
         }
 
-        @PostMapping("/answers")
-        public ResponseEntity<Answer> save(@RequestBody Answer answer) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(answer));
+        @PostMapping("/echos")
+        public ResponseEntity<Echo> save(@RequestBody Echo echo) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(echo));
         }
     }
 
-    static class AnswerNotFoundException extends HttpStatusCodeException {
-        public AnswerNotFoundException(UUID id) {
+    static class EchoNotFoundException extends HttpStatusCodeException {
+        public EchoNotFoundException(UUID id) {
             super(HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()), "Could not find " + id);
         }
     }
 
     @RestControllerAdvice
-    static class AnswerNotFoundAdvice {
-        @ExceptionHandler(AnswerNotFoundException.class)
+    static class EchoNotFoundAdvice {
+        @ExceptionHandler(EchoNotFoundException.class)
         @ResponseStatus(HttpStatus.NOT_FOUND)
-        String answerNotFoundHandler(AnswerNotFoundException ex) {
+        String echoNotFoundHandler(EchoNotFoundException ex) {
             return ex.getMessage();
         }
     }
