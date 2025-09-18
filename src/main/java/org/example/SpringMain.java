@@ -4,11 +4,13 @@ import org.example.EchoRepository.Echo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,14 +32,30 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @SpringBootApplication
 public class SpringMain {
 
+    @Component
+    @ConfigurationProperties
+    static class EnvironmentConfig {
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+    
     @RestController
     public static class EchoController {
+        @Autowired
+        private EnvironmentConfig env;
         @Autowired
         private EchoRepository repository;
 
         @GetMapping("/")
-        public String index() {
-            return "ok";
+        public Object index() {
+            return Map.of("env", env.name, "status", "ok");
         }
 
         @GetMapping("/echos/{id}")

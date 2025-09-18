@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +44,8 @@ public class SpringMainTest {
     public void shouldGetOk() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(equalTo("ok")));
+                .andExpect(jsonPath("status", equalTo("ok")))
+                .andExpect(jsonPath("env", equalTo("dev")));
     }
 
     @Test
