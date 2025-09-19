@@ -5,7 +5,7 @@ This project serves as a playground for experimenting with Spring Boot API devel
 ## Overview
 
 The project includes:
-- Basic REST endpoints (`/`, `/actuator/health`, `/answer`)
+- Basic REST endpoints (`/`, `/actuator/health`, `/echos`)
 - Entity management with JPA
 - Error handling
 - Integration tests
@@ -33,9 +33,9 @@ mvn test
 ## API Endpoints
 
 - `GET /` - Index endpoint, returns "ok"
-- `GET /answer/{id}` - Get a specific answer by ID
-- `GET /answers` - List all answers
-- `POST /answer` - Create a new answer
+- `GET /echos/{id}` - Get a specific echos by ID
+- `GET /echoss` - List all echos
+- `POST /echos` - Create a new echos
 
 ## Containerization
 
