@@ -37,4 +37,31 @@ mvn test
 - `GET /answers` - List all answers
 - `POST /answer` - Create a new answer
 
-Feel free to use this as a starting point for your own Spring Boot experiments!
+## Containerization
+
+### Build Docker Image
+```bash
+docker build -t echo-api:latest .
+```
+
+### Run with Docker
+```bash
+docker run -p 8080:8080 echo-api:latest
+```
+
+### Kubernetes Deployment
+Apply the Kubernetes manifests in your cluster:
+```bash
+kubectl apply -f k8s-deployment.yaml
+```
+This will create a Deployment and a Service (ClusterIP) for the API. You can port-forward to access it:
+```bash
+kubectl port-forward svc/echo-api 8080:80
+```
+
+#### If using Minikube and you built the image locally, load it into your Minikube cluster before applying the manifest:
+```bash
+minikube start
+minikube image load echo-api:latest
+```
+Then apply the manifest and port-forward as above. You can then manage the cluster using `minikube dashboard` if preferred to command line.

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo-api
+  template:
+    metadata:
+      labels:
+        app: echo-api
+    spec:
+      containers:
+      - name: echo-api
+        image: echo-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-api
+spec:
+  type: ClusterIP
+  selector:
+    app: echo-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
