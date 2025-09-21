@@ -66,10 +66,12 @@ You can then access them on localhost:8090 and 8080 respectively
 minikube start
 minikube image load echo-api:latest
 ```
-Then apply the manifest and port-forward as above. You can then manage the cluster using `minikube dashboard` if preferred to command line.
+After applying the manifest you can either port-forward as above or use `minikube service echo-api-lb` to find the url to access the service.
+
+You can also manage the cluster using `minikube dashboard` if preferred to command line.
 
 ### Exposing with LoadBalancer (Minikube)
-If you want to access your API via a LoadBalancer service (on port 80), apply the manifest and run:
+If you want to access your API via a LoadBalancer service (external to cluster and port 80), apply the manifest and run:
 ```bash
 minikube tunnel
 ```
