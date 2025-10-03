@@ -12,10 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Repository
-public interface EchoRepository extends JpaRepository<EchoRepository.Echo, UUID> {
+public interface PostRepository extends JpaRepository<PostRepository.Post, UUID> {
 
     @Entity
-    class Echo {
+    class Post {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         final UUID id;
@@ -26,11 +26,11 @@ public interface EchoRepository extends JpaRepository<EchoRepository.Echo, UUID>
 
         final Date modified;
 
-        public Echo() {
+        public Post() {
             this(null, null, new Date(), new Date());
         }
 
-        public Echo(UUID id, String answer, Date created, Date modified) {
+        public Post(UUID id, String answer, Date created, Date modified) {
             this.id = id;
             this.answer = answer;
             this.created = created;

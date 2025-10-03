@@ -7,7 +7,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import org.example.EchoRepository.Echo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,44 +39,44 @@ class SpringApplicationTest {
 	}
 
 	@Test
-	void echoNotFound() throws Exception {
-		UUID echoUUID = UUID.randomUUID();
+	void postNotFound() throws Exception {
+		UUID postUUID = UUID.randomUUID();
 		ResponseEntity<String> forObject = restTemplate
-				.getForEntity("http://localhost:" + port + "/echos/{id}", String.class, echoUUID);
+				.getForEntity("http://localhost:" + port + "/posts/{id}", String.class, postUUID);
 		assertThat(forObject.getStatusCode().value()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(forObject.getBody())
-				.contains("404 Could not find "+echoUUID);
+				.contains("404 Could not find "+postUUID);
 	}
 
 	@Test
-	void echoFound() throws Exception {
-		UUID echoId = databaseLoader.testEchos.getFirst().getId();
+	void postFound() throws Exception {
+		UUID postId = databaseLoader.testPosts.getFirst().getId();
 		ResponseEntity<String> forString = restTemplate
-			.getForEntity("http://localhost:" + port + "/echos/{id}", String.class, echoId);
+			.getForEntity("http://localhost:" + port + "/posts/{id}", String.class, postId);
 		assertThat(forString.getStatusCode().value()).isEqualTo(HttpStatus.OK.value());
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-		ZonedDateTime created = databaseLoader.testEchos.getFirst().getCreated().toInstant().atZone(ZoneOffset.UTC);
-		ZonedDateTime modified = databaseLoader.testEchos.getFirst().getModified().toInstant().atZone(ZoneOffset.UTC);
+		ZonedDateTime created = databaseLoader.testPosts.getFirst().getCreated().toInstant().atZone(ZoneOffset.UTC);
+		ZonedDateTime modified = databaseLoader.testPosts.getFirst().getModified().toInstant().atZone(ZoneOffset.UTC);
 		assertThat(forString.getBody())
 			.isEqualTo(String.format(
 				"{"+
 					"\"id\":\"%s\",\"answer\":\"answer 1\","+
 					"\"created\":\"%s\",\"modified\":\"%s\","+
 					"\"_links\":{"+
-						"\"self\":{\"href\":\"http://localhost:%s/echos/%s\"},"+
-						"\"echos\":{\"href\":\"http://localhost:%s/echos\"}"+
+						"\"self\":{\"href\":\"http://localhost:%s/posts/%s\"},"+
+						"\"posts\":{\"href\":\"http://localhost:%s/posts\"}"+
 					"}"+
 				"}",
-				echoId,
+				postId,
 				dateTimeFormatter.format(created), dateTimeFormatter.format(modified),
-				port, echoId, port
+				port, postId, port
 		));
 		// Check object mapping
-		ResponseEntity<Echo> forObject = restTemplate
-			.getForEntity("http://localhost:" + port + "/echos/{id}", Echo.class, echoId);
-		assertThat(forObject.getBody().id).isEqualTo(echoId);
+		ResponseEntity<PostRepository.Post> forObject = restTemplate
+			.getForEntity("http://localhost:" + port + "/posts/{id}", PostRepository.Post.class, postId);
+		assertThat(forObject.getBody().id).isEqualTo(postId);
 		assertThat(forObject.getBody().answer).isEqualTo("answer 1");
-		assertThat(forObject.getBody().created).isEqualTo(databaseLoader.testEchos.getFirst().getCreated());
+		assertThat(forObject.getBody().created).isEqualTo(databaseLoader.testPosts.getFirst().getCreated());
 		assertThat(forObject.getBody().modified).isEqualTo(forObject.getBody().created);
 	}
 }

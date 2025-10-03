@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.EchoRepository.Echo;
+import org.example.PostRepository.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -43,53 +43,53 @@ public class SpringMain {
     }
     
     @RestController
-    public static class EchoController {
+    public static class PostsController {
         @Autowired
         private EnvironmentConfig env;
         @Autowired
-        private EchoRepository repository;
+        private PostRepository repository;
 
         @GetMapping("/")
         public Object index() {
             return Map.of("env", env.getName(), "status", "ok");
         }
 
-        @GetMapping("/echos/{id}")
-        public EntityModel<Echo> one(@PathVariable UUID id) {
-            Echo echo = repository.findById(id).orElseThrow(() -> new EchoNotFoundException(id));
-            return EntityModel.of(echo, //
-                    linkTo(methodOn(EchoController.class).one(id)).withSelfRel(),
-                    linkTo(methodOn(EchoController.class).all()).withRel("echos"));
+        @GetMapping("/posts/{id}")
+        public EntityModel<PostRepository.Post> one(@PathVariable UUID id) {
+            PostRepository.Post post = repository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+            return EntityModel.of(post, //
+                    linkTo(methodOn(PostsController.class).one(id)).withSelfRel(),
+                    linkTo(methodOn(PostsController.class).all()).withRel("posts"));
         }
 
-        @GetMapping("/echos")
-        public CollectionModel<EntityModel<Echo>> all() {
-            List<EntityModel<Echo>> echos = repository.findAll().stream()
-                    .map(employee -> EntityModel.of(employee,
-                            linkTo(methodOn(EchoController.class).one(employee.getId())).withSelfRel(),
-                            linkTo(methodOn(EchoController.class).all()).withRel("echos")))
+        @GetMapping("/posts")
+        public CollectionModel<EntityModel<Post>> all() {
+            List<EntityModel<PostRepository.Post>> posts = repository.findAll().stream()
+                    .map(post -> EntityModel.of(post,
+                            linkTo(methodOn(PostsController.class).one(post.getId())).withSelfRel(),
+                            linkTo(methodOn(PostsController.class).all()).withRel("posts")))
                     .collect(Collectors.toList());
 
-            return CollectionModel.of(echos, linkTo(methodOn(EchoController.class).all()).withSelfRel());
+            return CollectionModel.of(posts, linkTo(methodOn(PostsController.class).all()).withSelfRel());
         }
 
-        @PostMapping("/echos")
-        public ResponseEntity<Echo> save(@RequestBody Echo echo) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(echo));
+        @PostMapping("/posts")
+        public ResponseEntity<Post> save(@RequestBody Post post) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(post));
         }
     }
 
-    static class EchoNotFoundException extends HttpStatusCodeException {
-        public EchoNotFoundException(UUID id) {
+    static class PostNotFoundException extends HttpStatusCodeException {
+        public PostNotFoundException(UUID id) {
             super(HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()), "Could not find " + id);
         }
     }
 
     @RestControllerAdvice
-    static class EchoNotFoundAdvice {
-        @ExceptionHandler(EchoNotFoundException.class)
+    static class PostNotFoundAdvice {
+        @ExceptionHandler(PostNotFoundException.class)
         @ResponseStatus(HttpStatus.NOT_FOUND)
-        String echoNotFoundHandler(EchoNotFoundException ex) {
+        String postNotFoundHandler(PostNotFoundException ex) {
             return ex.getMessage();
         }
     }

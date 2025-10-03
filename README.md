@@ -5,7 +5,7 @@ This project serves as a playground for experimenting with Spring Boot API devel
 ## Overview
 
 The project includes:
-- Basic REST endpoints (`/`, `/actuator/health`, `/echos`)
+- Basic REST endpoints (`/`, `/actuator/health`, `/posts`)
 - Entity management with JPA
 - Error handling
 - Integration tests
@@ -33,20 +33,20 @@ mvn test
 ## API Endpoints
 
 - `GET /` - Index endpoint, returns "ok"
-- `GET /echos/{id}` - Get a specific echos by ID
-- `GET /echoss` - List all echos
-- `POST /echos` - Create a new echos
+- `GET /posts/{id}` - Get a specific posts by ID
+- `GET /postss` - List all posts
+- `POST /posts` - Create a new posts
 
 ## Containerization
 
 ### Build Docker Image
 ```bash
-docker build -t echo-api:latest .
+docker build -t post-api:latest .
 ```
 
 ### Run with Docker
 ```bash
-docker run -p 8080:8080 echo-api:latest
+docker run -p 8080:8080 post-api:latest
 ```
 
 ### Kubernetes Deployment
@@ -56,17 +56,17 @@ kubectl apply -f k8s-deployment.yaml
 ```
 This will create a Deployment and Services for the API. You can port-forward to access the services:
 ```bash
-kubectl port-forward svc/echo-api-cluster 8090:80
-kubectl port-forward svc/echo-api-lb 8080:80
+kubectl port-forward svc/post-api-cluster 8090:80
+kubectl port-forward svc/post-api-lb 8080:80
 ```
 You can then access them on localhost:8090 and 8080 respectively
 
 #### If using Minikube and you built the image locally, load it into your Minikube cluster before applying the manifest:
 ```bash
 minikube start
-minikube image load echo-api:latest
+minikube image load post-api:latest
 ```
-After applying the manifest you can either port-forward as above or use `minikube service echo-api-lb` to find the url to access the service.
+After applying the manifest you can either port-forward as above or use `minikube service post-api-lb` to find the url to access the service.
 
 You can also manage the cluster using `minikube dashboard` if preferred to command line.
 
@@ -75,8 +75,8 @@ If you want to access your API via a LoadBalancer service (external to cluster a
 ```bash
 minikube tunnel
 ```
-This will expose the `echo-api-lb` service on a local IP. You can get the external IP with:
+This will expose the `post-api-lb` service on a local IP. You can get the external IP with:
 ```bash
-kubectl get svc echo-api-lb
+kubectl get svc post-api-lb
 ```
 Then access your API at `http://<external-ip>/`.

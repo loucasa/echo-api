@@ -2,7 +2,7 @@ package org.example;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.EchoRepository.Echo;
+import org.example.PostRepository.Post;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,12 +32,12 @@ public class SpringMainTest {
     @Autowired
     private ObjectMapper mapper;
 
-    private ResultActions getEchoAndAssertResponse(int index) throws Exception {
-        UUID echoId = loader.testEchos.get(index).id;
+    private ResultActions getPostAndAssertResponse(int index) throws Exception {
+        UUID postId = loader.testPosts.get(index).id;
         return mvc.perform(MockMvcRequestBuilders
-                .get("/echos/{id}", echoId).accept(MediaType.APPLICATION_JSON))
+                .get("/posts/{id}", postId).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id", equalTo(echoId.toString())));
+                .andExpect(jsonPath("id", equalTo(postId.toString())));
     }
 
     @Test
@@ -49,23 +49,23 @@ public class SpringMainTest {
     }
 
     @Test
-    public void shouldGetechoOne() throws Exception {
-        getEchoAndAssertResponse(0)
+    public void shouldGetpostOne() throws Exception {
+        getPostAndAssertResponse(0)
                 .andExpect(jsonPath("answer", equalTo("answer 1")));
     }
 
     @Test
-    public void shouldGetEchoTwo() throws Exception {
-        getEchoAndAssertResponse(1)
+    public void shouldGetPostTwo() throws Exception {
+        getPostAndAssertResponse(1)
                 .andExpect(jsonPath("answer", equalTo("answer 2")));
     }
 
     @Test
-    void shouldSaveEcho() throws Exception {
-        Echo echo = new Echo(null, "answer 3", new Date(), new Date());
+    void shouldSavePost() throws Exception {
+        Post post = new PostRepository.Post(null, "answer 3", new Date(), new Date());
         mvc.perform(MockMvcRequestBuilders
-                .post("/echos")
-                .content(mapper.writeValueAsString(echo)).contentType(MediaType.APPLICATION_JSON))
+                .post("/posts")
+                .content(mapper.writeValueAsString(post)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
 }

@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: echo-api
+  name: post-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: echo-api
+      app: post-api
   template:
     metadata:
       labels:
-        app: echo-api
+        app: post-api
     spec:
       containers:
-      - name: echo-api
-        image: echo-api:latest
+      - name: post-api
+        image: post-api:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
@@ -25,11 +25,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: echo-api-cluster
+  name: post-api-cluster
 spec:
   type: ClusterIP
   selector:
-    app: echo-api
+    app: post-api
   ports:
     - protocol: TCP
       port: 80
@@ -38,11 +38,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: echo-api-lb
+  name: post-api-lb
 spec:
   type: LoadBalancer
   selector:
-    app: echo-api
+    app: post-api
   ports:
     - protocol: TCP
       port: 80
