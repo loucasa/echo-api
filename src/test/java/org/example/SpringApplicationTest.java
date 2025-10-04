@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import org.example.PostsRepository.Post;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,7 +61,7 @@ class SpringApplicationTest {
 		assertThat(forString.getBody())
 			.isEqualTo(String.format(
 				"{"+
-					"\"id\":\"%s\",\"answer\":\"answer 1\","+
+					"\"id\":\"%s\",\"content\":\"content 1\","+
 					"\"created\":\"%s\",\"modified\":\"%s\","+
 					"\"_links\":{"+
 						"\"self\":{\"href\":\"http://localhost:%s/posts/%s\"},"+
@@ -72,10 +73,10 @@ class SpringApplicationTest {
 				port, postId, port
 		));
 		// Check object mapping
-		ResponseEntity<PostRepository.Post> forObject = restTemplate
-			.getForEntity("http://localhost:" + port + "/posts/{id}", PostRepository.Post.class, postId);
+		ResponseEntity<Post> forObject = restTemplate
+			.getForEntity("http://localhost:" + port + "/posts/{id}", Post.class, postId);
 		assertThat(forObject.getBody().id).isEqualTo(postId);
-		assertThat(forObject.getBody().answer).isEqualTo("answer 1");
+		assertThat(forObject.getBody().content).isEqualTo("content 1");
 		assertThat(forObject.getBody().created).isEqualTo(databaseLoader.testPosts.getFirst().getCreated());
 		assertThat(forObject.getBody().modified).isEqualTo(forObject.getBody().created);
 	}

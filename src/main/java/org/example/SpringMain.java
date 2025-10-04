@@ -1,10 +1,17 @@
 package org.example;
 
-import org.example.PostRepository.Post;
+import com.devskiller.friendly_id.FriendlyId;
+import com.devskiller.friendly_id.jackson.FriendlyIdModule;
+import org.example.CommentsRepository.Comment;
+import org.example.PostsRepository.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -23,6 +30,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 import java.util.Map;
@@ -41,13 +49,13 @@ public class SpringMain {
     static class EnvironmentConfig {
         private String name;
     }
-    
+
     @RestController
     public static class PostsController {
         @Autowired
         private EnvironmentConfig env;
         @Autowired
-        private PostRepository repository;
+        private PostsRepository repository;
 
         @GetMapping("/")
         public Object index() {
@@ -55,8 +63,8 @@ public class SpringMain {
         }
 
         @GetMapping("/posts/{id}")
-        public EntityModel<PostRepository.Post> one(@PathVariable UUID id) {
-            PostRepository.Post post = repository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+        public EntityModel<Post> one(@PathVariable UUID id) {
+            Post post = repository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
             return EntityModel.of(post, //
                     linkTo(methodOn(PostsController.class).one(id)).withSelfRel(),
                     linkTo(methodOn(PostsController.class).all()).withRel("posts"));
@@ -64,7 +72,7 @@ public class SpringMain {
 
         @GetMapping("/posts")
         public CollectionModel<EntityModel<Post>> all() {
-            List<EntityModel<PostRepository.Post>> posts = repository.findAll().stream()
+            List<EntityModel<Post>> posts = repository.findAll().stream()
                     .map(post -> EntityModel.of(post,
                             linkTo(methodOn(PostsController.class).one(post.getId())).withSelfRel(),
                             linkTo(methodOn(PostsController.class).all()).withRel("posts")))
@@ -79,17 +87,61 @@ public class SpringMain {
         }
     }
 
+    @RestController
+    public static class CommentsController {
+        @Autowired
+        private EnvironmentConfig env;
+        @Autowired
+        private CommentsRepository repository;
+
+        @GetMapping("/posts/{postId}/comments/{commentId}")
+        public EntityModel<Comment> one(@PathVariable UUID postId, @PathVariable UUID commentId) {
+            Comment comment = repository.findById(postId).orElseThrow(() -> new CommentNotFoundException(postId));
+            return EntityModel.of(comment, //
+                    linkTo(methodOn(CommentsController.class).one(postId, commentId)).withSelfRel(),
+                    linkTo(methodOn(CommentsController.class).all(postId)).withRel("comments"));
+        }
+
+        @GetMapping("/posts/{postId}/comments")
+        public CollectionModel<EntityModel<Comment>> all(@PathVariable UUID postId) {
+            List<EntityModel<Comment>> comments = repository.findAll().stream()
+                    .map(comment -> EntityModel.of(comment,
+                            linkTo(methodOn(CommentsController.class).one(comment.getPostId(), comment.getId())).withSelfRel(),
+                            linkTo(methodOn(CommentsController.class).all(comment.getPostId())).withRel("comments")))
+                    .collect(Collectors.toList());
+
+            return CollectionModel.of(comments, linkTo(methodOn(CommentsController.class).all(postId)).withSelfRel());
+        }
+
+        @PostMapping("/posts/{postId}/comments")
+        public ResponseEntity<Comment> save(@RequestBody Comment comment) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(comment));
+        }
+    }
+
     static class PostNotFoundException extends HttpStatusCodeException {
         public PostNotFoundException(UUID id) {
             super(HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()), "Could not find " + id);
         }
     }
 
+    static class CommentNotFoundException extends HttpStatusCodeException {
+        public CommentNotFoundException(UUID id) {
+            super(HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()), "Could not find " + id);
+        }
+    }
+
     @RestControllerAdvice
-    static class PostNotFoundAdvice {
+    static class NotFoundAdvice {
         @ExceptionHandler(PostNotFoundException.class)
         @ResponseStatus(HttpStatus.NOT_FOUND)
         String postNotFoundHandler(PostNotFoundException ex) {
+            return ex.getMessage();
+        }
+
+        @ExceptionHandler(CommentNotFoundException.class)
+        @ResponseStatus(HttpStatus.NOT_FOUND)
+        String commentNotFoundHandler(CommentNotFoundException ex) {
             return ex.getMessage();
         }
     }

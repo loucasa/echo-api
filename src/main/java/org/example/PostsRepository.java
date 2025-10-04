@@ -12,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Repository
-public interface PostRepository extends JpaRepository<PostRepository.Post, UUID> {
+public interface PostsRepository extends JpaRepository<PostsRepository.Post, UUID> {
 
     @Entity
     class Post {
@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<PostRepository.Post, UUID>
         @GeneratedValue(strategy = GenerationType.UUID)
         final UUID id;
 
-        final String answer;
+        final String content;
 
         final Date created;
 
@@ -30,9 +30,9 @@ public interface PostRepository extends JpaRepository<PostRepository.Post, UUID>
             this(null, null, new Date(), new Date());
         }
 
-        public Post(UUID id, String answer, Date created, Date modified) {
+        public Post(UUID id, String content, Date created, Date modified) {
             this.id = id;
-            this.answer = answer;
+            this.content = content;
             this.created = created;
             this.modified = modified;
         }
@@ -41,8 +41,8 @@ public interface PostRepository extends JpaRepository<PostRepository.Post, UUID>
             return id;
         }
 
-        public String getAnswer() {
-            return answer;
+        public String getContent() {
+            return content;
         }
 
         public Date getCreated() {
@@ -55,9 +55,9 @@ public interface PostRepository extends JpaRepository<PostRepository.Post, UUID>
 
         @Override
         public String toString() {
-            return "Answer{" +
+            return "Post{" +
                     "id=" + id +
-                    ", answer='" + answer + '\'' +
+                    ", content='" + content + '\'' +
                     '}';
         }
     }

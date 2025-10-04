@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.PostRepository.Post;
+import org.example.PostsRepository.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +18,20 @@ class DatabaseLoader {
     private static final Logger log = LoggerFactory.getLogger(DatabaseLoader.class);
 
     @Autowired
-    PostRepository repository;
+    PostsRepository repository;
 
-    List<PostRepository.Post> testPosts = new ArrayList<>();
+    List<PostsRepository.Post> testPosts = new ArrayList<>();
 
     @Bean
     CommandLineRunner load() {
 
         return args -> {
-            log.info("Preloading {}", createPost("answer 1"));
-            log.info("Preloading {}", createPost("answer 2"));
+            log.info("Preloading {}", createPost("content 1"));
+            log.info("Preloading {}", createPost("content 2"));
         };
     }
 
-    PostRepository.Post createPost(String postValue) {
+    PostsRepository.Post createPost(String postValue) {
         var post = repository.save(new Post(null, postValue, new Date(), new Date()));
         testPosts.add(post);
         return post;
